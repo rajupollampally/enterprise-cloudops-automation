@@ -11,11 +11,29 @@ This module provides a daily reporting pipeline for large-scale Kubernetes envir
 ## Files
 
 - `config.yaml` - environment endpoints, credentials, recipients, and thresholds
-- `collectors.py` - collects data from monitoring APIs and Azure waste endpoints
-- `analyzer.py` - analyzes cluster health, red alerts, and resource waste
+- `health/` - health monitoring collectors and analysis
+- `waste/` - waste collectors and analysis
 - `reporter.py` - renders HTML reports and sends Outlook/Teams notifications
 - `run_daily.py` - CLI entrypoint for one-off or scheduled daily runs
 - `templates/` - HTML report templates
+
+## Folder separation
+
+- `health/` contains cluster health collection and monitoring analytics.
+- `waste/` contains Azure waste reporting, idle VM, and storage cost analysis.
+- `reporter.py` combines both health and waste summaries into email and Teams reports.
+
+## Package usage
+
+- `from monitoring.health import collect_cluster_health`
+- `from monitoring.waste import analyze_waste`
+- `from monitoring import health, waste`
+
+Run as a Python package from the repo root:
+
+```bash
+python -m monitoring.run_daily --env dev
+```
 
 ## Setup
 
