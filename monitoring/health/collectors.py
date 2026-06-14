@@ -56,17 +56,7 @@ def collect_datadog_events(config: Dict[str, Any]) -> Dict[str, Any]:
     return request_json(url, headers=headers, params=params)
 
 
-def collect_azure_waste(config: Dict[str, Any]) -> Dict[str, Any]:
-    if not config.get('cost_api_url'):
-        logger.warning('Azure waste collection is not configured.')
-        return {}
-    url = config['cost_api_url']
-    headers = {'Authorization': f"Bearer {config.get('api_token', '')}"}
-    params = {'interval': '7d', 'threshold_gb': config.get('storage_threshold_gb', 5)}
-    return request_json(url, headers=headers, params=params)
-
-
-def collect_cluster_resources(config: Dict[str, Any], cluster_name: str) -> Dict[str, Any]:
+def collect_cluster_health(config: Dict[str, Any], cluster_name: str) -> Dict[str, Any]:
     return {
         'cluster_name': cluster_name,
         'splunk': collect_splunk_alerts(config['splunk'], cluster_name),

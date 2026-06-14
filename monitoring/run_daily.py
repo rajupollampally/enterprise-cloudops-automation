@@ -7,9 +7,11 @@ from typing import Optional
 import schedule
 import yaml
 
-import collectors
-import analyzer
+import health.collectors as health_collectors
+import health.analyzer as health_analyzer
 import reporter
+import waste.collectors as waste_collectors
+import waste.analyzer as waste_analyzer
 from collector_utils import request_json
 
 logger = logging.getLogger(__name__)
@@ -21,15 +23,11 @@ def load_config(path: str) -> dict:
 
 
 def collect_cluster_data(env_cfg: dict, cluster_name: str) -> dict:
-    return collectors.collect_cluster_resources(env_cfg, cluster_name)
+    return health_collectors.collect_cluster_health(env_cfg, cluster_name)
 
 
 def collect_cloud_waste(env_cfg: dict) -> dict:
-    azure_cfg = env_cfg.get('azure', {})
-    return {
-        'storage': request_json(azure_cfg.get('waste_api_url', '')) if azure_cfg.get('waste_api_url') else {},
-        'vms': request_json(azure_cfg.get('idle_vm_api_url', '')) if azure_cfg.get('idle_vm_api_url') else {},
-    }
+    return waste_collectors.collect_cloud_waste(env_cfg)
 
 
 def run_for_environment(config: dict, environment: str, cluster_name: Optional[str] = None):
@@ -46,12 +44,12 @@ def run_for_environment(config: dict, environment: str, cluster_name: Optional[s
         cluster_data.append(collect_cluster_data(env_cfg, cluster))
 
     cloud_waste = collect_cloud_waste(env_cfg)
-    waste_df = analyzer.analyze_waste(
+    waste_df = waste_analyzer.analyze_waste(
         cloud_waste.get('storage', {}).get('storage', []),
         cloud_waste.get('vms', {}).get('vms', []),
         config['report'].get('storage_report_threshold_gb', 5),
     )
-    health_summary = analyzer.build_monitoring_summary(cluster_data)
+    health_summary = health_analyzer.build_health_summary(cluster_data)
     reporter.send_reports(config, environment, health_summary, waste_df, cloud_waste)
 
 
