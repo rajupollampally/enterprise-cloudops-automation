@@ -1,0 +1,8 @@
+requests
+pandas
+pyyaml
+jinja2
+msal
+msal-extensions
+python-dateutil
+schedule

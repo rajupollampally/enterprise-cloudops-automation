@@ -1,0 +1,70 @@
+pipeline {
+  agent any
+
+  environment {
+    AZURE_CREDENTIALS = credentials('azure-service-principal')
+    GITHUB_TOKEN      = credentials('github-token')
+    SLACK_WEBHOOK     = credentials('slack-webhook')
+    TERRAFORM_WORKSPACE = 'default'
+    TEAM_NAME         = 'PlatformTeam'
+    PRODUCT           = 'CoreProduct'
+    TEAM_LEAD         = 'Team Lead'
+    TEAM_VIP          = 'vip@example.com'
+    TEAM_BUDGET_ID    = 'BUDGET-001'
+    ENVIRONMENT       = 'prod'
+  }
+
+  stages {
+    stage('Validate PR Approvals') {
+      when {
+        expression { return env.CHANGE_ID != null }
+      }
+      steps {
+        script {
+          def approvals = sh(script: "python3 jenkins/check_pr_approvals.py --pr-url ${env.CHANGE_URL}", returnStdout: true).trim()
+          if (approvals.toInteger() < 2) {
+            error "PR ${env.CHANGE_ID} requires at least 2 approvals before build can proceed."
+          }
+        }
+      }
+    }
+
+    stage('Terraform Init') {
+      steps {
+        dir('terraform') {
+          sh 'terraform init'
+        }
+      }
+    }
+
+    stage('Terraform Plan') {
+      steps {
+        dir('terraform') {
+          sh 'terraform plan -out=tfplan'
+        }
+      }
+    }
+
+    stage('Terraform Apply') {
+      steps {
+        dir('terraform') {
+          sh 'terraform apply -auto-approve tfplan'
+        }
+      }
+    }
+  }
+
+  post {
+    success {
+      echo 'Build succeeded'
+      sh 'python3 jenkins/slack_notify.py success "Terraform deployment succeeded."'
+    }
+    failure {
+      echo 'Build failed'
+      sh 'python3 jenkins/slack_notify.py failure "Terraform deployment failed."'
+    }
+    unstable {
+      sh 'python3 jenkins/slack_notify.py warning "Build is unstable."'
+    }
+  }
+}

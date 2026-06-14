@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Waste Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+    th, td { padding: 8px 10px; border: 1px solid #ccc; }
+    th { background: #f4f4f4; }
+    .alert-warning { color: #b36b00; }
+  </style>
+</head>
+<body>
+  <h1>Waste Report - {{ environment }}</h1>
+  <p>Generated at {{ generated_at }}</p>
+
+  <h2>Waste Summary</h2>
+  {% if waste_summary %}
+    <table>
+      <thead>
+        <tr>
+          <th>Resource ID</th>
+          <th>Type</th>
+          <th>Owner</th>
+          <th>Environment</th>
+          <th>Unused GB</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in waste_summary %}
+          <tr class="alert-warning">
+            <td>{{ item.resource_id }}</td>
+            <td>{{ item.resource_type }}</td>
+            <td>{{ item.owner }}</td>
+            <td>{{ item.environment }}</td>
+            <td>{{ item.unused_gb }}</td>
+            <td>{{ item.reason }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No unused storage or idle VMs detected.</p>
+  {% endif %}
+
+  <h2>Cloud Waste Insights</h2>
+  {% if cloud_waste %}
+    <pre>{{ cloud_waste | safe }}</pre>
+  {% else %}
+    <p>No cloud waste payload available from Azure endpoints.</p>
+  {% endif %}
+</body>
+</html>

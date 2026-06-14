@@ -1,0 +1,73 @@
+environments:
+  dev:
+    label: "Dev"
+    clusters:
+      - "dev-cluster-1"
+      - "dev-cluster-2"
+    splunk:
+      base_url: "https://splunk-dev.example.com"
+      token: "YOUR_SPLUNK_DEV_TOKEN"
+    prometheus:
+      base_url: "https://prometheus-dev.example.com"
+    grafana:
+      base_url: "https://grafana-dev.example.com"
+      api_key: "YOUR_GRAFANA_DEV_KEY"
+      dashboard_uid: "dev-dashboard"
+    dynatrace:
+      base_url: "https://dynatrace-dev.example.com"
+      api_token: "YOUR_DYNATRACE_DEV_TOKEN"
+    datadog:
+      base_url: "https://api.datadoghq.com"
+      api_key: "YOUR_DATADOG_API_KEY"
+      app_key: "YOUR_DATADOG_APP_KEY"
+    azure:
+      waste_api_url: "https://management.azure.com/subscriptions/<sub>/providers/Microsoft.CostManagement/query"
+      idle_vm_api_url: "https://management.azure.com/subscriptions/<sub>/providers/Microsoft.Compute/virtualMachines"
+    outlook:
+      monitoring_to:
+        - "dev-monitoring@example.com"
+      waste_to:
+        - "dev-waste@example.com"
+    teams:
+      monitoring_webhook: "https://outlook.office.com/webhook/your-dev-monitoring-webhook"
+      waste_webhook: "https://outlook.office.com/webhook/your-dev-waste-webhook"
+
+  prod:
+    label: "Prod"
+    clusters:
+      - "prod-cluster-1"
+      - "prod-cluster-2"
+    splunk:
+      base_url: "https://splunk-prod.example.com"
+      token: "YOUR_SPLUNK_PROD_TOKEN"
+    prometheus:
+      base_url: "https://prometheus-prod.example.com"
+    grafana:
+      base_url: "https://grafana-prod.example.com"
+      api_key: "YOUR_GRAFANA_PROD_KEY"
+      dashboard_uid: "prod-dashboard"
+    dynatrace:
+      base_url: "https://dynatrace-prod.example.com"
+      api_token: "YOUR_DYNATRACE_PROD_TOKEN"
+    datadog:
+      base_url: "https://api.datadoghq.com"
+      api_key: "YOUR_DATADOG_APP_KEY"
+      app_key: "YOUR_DATADOG_APP_KEY"
+    azure:
+      waste_api_url: "https://management.azure.com/subscriptions/<sub>/providers/Microsoft.CostManagement/query"
+      idle_vm_api_url: "https://management.azure.com/subscriptions/<sub>/providers/Microsoft.Compute/virtualMachines"
+    outlook:
+      monitoring_to:
+        - "prod-monitoring@example.com"
+      waste_to:
+        - "prod-waste@example.com"
+    teams:
+      monitoring_webhook: "https://outlook.office.com/webhook/your-prod-monitoring-webhook"
+      waste_webhook: "https://outlook.office.com/webhook/your-prod-waste-webhook"
+
+report:
+  from_address: "alerts@example.com"
+  subject_prefix: "K8s Monitoring Report"
+  smtp_host: "smtp.office365.com"
+  smtp_port: 587
+  storage_report_threshold_gb: 5

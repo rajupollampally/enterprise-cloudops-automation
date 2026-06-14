@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Monitoring Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+    th, td { padding: 8px 10px; border: 1px solid #ccc; }
+    th { background: #f4f4f4; }
+    .alert-critical { color: #a60000; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Monitoring Report - {{ environment }}</h1>
+  <p>Generated at {{ generated_at }}</p>
+  <p>Cluster count: {{ cluster_count }}</p>
+
+  <h2>Critical / Red Alerts</h2>
+  {% if critical_alerts %}
+    <table>
+      <thead>
+        <tr>
+          <th>Cluster</th>
+          <th>Host</th>
+          <th>Sourcetype</th>
+          <th>Severity</th>
+          <th>Count</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for alert in critical_alerts %}
+        <tr class="alert-critical">
+          <td>{{ alert.cluster }}</td>
+          <td>{{ alert.host }}</td>
+          <td>{{ alert.sourcetype }}</td>
+          <td>{{ alert.severity }}</td>
+          <td>{{ alert.count }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No critical alerts identified in the last 24 hours.</p>
+  {% endif %}
+
+  <h2>Restart Summary</h2>
+  {% if restart_summary %}
+    <table>
+      <thead>
+        <tr>
+          <th>Cluster</th>
+          <th>Restarts</th>
+          <th>DB Errors</th>
+          <th>Ready Metrics Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in restart_summary %}
+          <tr>
+            <td>{{ row.cluster }}</td>
+            <td>{{ row.restarts }}</td>
+            <td>{{ row.db_errors }}</td>
+            <td>{{ row.node_ready_metrics }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No cluster restart metrics available.</p>
+  {% endif %}
+
+  <h2>Red Alert Totals</h2>
+  {% if red_alerts %}
+    <table>
+      <thead>
+        <tr>
+          <th>Cluster</th>
+          <th>Restarts</th>
+          <th>DB Errors</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in red_alerts %}
+          <tr class="alert-critical">
+            <td>{{ row.cluster }}</td>
+            <td>{{ row.restarts }}</td>
+            <td>{{ row.db_errors }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No red alert totals to show.</p>
+  {% endif %}
+</body>
+</html>

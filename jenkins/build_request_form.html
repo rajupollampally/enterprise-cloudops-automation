@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Azure Deployment Request</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f3f4f6; margin:0; padding:0; }
+    .container { max-width: 900px; margin: 2rem auto; background:#fff; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.08); padding:2rem; }
+    h1 { margin-top:0; }
+    label { display:block; margin-bottom:.25rem; font-weight:600; }
+    input, select, textarea, button { width:100%; padding:.75rem 1rem; margin-bottom:1rem; border:1px solid #d1d5db; border-radius:8px; font-size:1rem; }
+    button { background:#2563eb; color:#fff; border:none; cursor:pointer; }
+    button:hover { background:#1d4ed8; }
+    .grid { display:grid; gap:1rem; grid-template-columns:1fr 1fr; }
+    .full { grid-column:1/-1; }
+    .notice { background:#eff6ff; border-left:4px solid #3b82f6; padding:1rem; margin-bottom:1rem; }
+    .status { font-weight:700; }
+  </style>
+  <script src="https://alcdn.msauth.net/browser/2.35.0/js/msal-browser.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Azure Deployment Request</h1>
+    <div class="notice">
+      <p>Use your Azure AD SSO account to sign in, fill the deployment metadata, and trigger the Jenkins pipeline.</p>
+      <p><strong>Note:</strong> Replace <code>YOUR_AZURE_AD_APP_CLIENT_ID</code> and Jenkins settings in <code>trigger_build.js</code> before use.</p>
+    </div>
+
+    <div id="login-section">
+      <button type="button" onclick="signIn()">Sign in with Azure AD</button>
+      <p id="user-info"></p>
+    </div>
+
+    <form id="deployment-form" onsubmit="submitBuild(event)">
+      <div class="grid">
+        <div>
+          <label for="teamName">Team Name</label>
+          <input id="teamName" name="teamName" type="text" required placeholder="PlatformTeam" />
+        </div>
+        <div>
+          <label for="product">Product</label>
+          <input id="product" name="product" type="text" required placeholder="CoreProduct" />
+        </div>
+        <div>
+          <label for="teamLead">Team Lead</label>
+          <input id="teamLead" name="teamLead" type="text" required placeholder="Team Lead" />
+        </div>
+        <div>
+          <label for="teamVip">Team VIP</label>
+          <input id="teamVip" name="teamVip" type="text" required placeholder="vip@example.com" />
+        </div>
+        <div>
+          <label for="budgetId">Budget ID</label>
+          <input id="budgetId" name="budgetId" type="text" required placeholder="BUDGET-001" />
+        </div>
+        <div>
+          <label for="employeeId">Employee ID</label>
+          <input id="employeeId" name="employeeId" type="text" readonly placeholder="Login to populate" />
+        </div>
+        <div>
+          <label for="environment">Environment</label>
+          <select id="environment" name="environment" required>
+            <option value="dev">dev</option>
+            <option value="staging">staging</option>
+            <option value="prod" selected>prod</option>
+          </select>
+        </div>
+        <div>
+          <label for="prUrl">Pull Request URL</label>
+          <input id="prUrl" name="prUrl" type="url" required placeholder="https://github.com/org/repo/pull/123" />
+        </div>
+      </div>
+
+      <div class="full">
+        <label for="comments">Deployment Comments</label>
+        <textarea id="comments" name="comments" rows="4" placeholder="Optional context for this deployment."></textarea>
+      </div>
+
+      <button type="submit">Trigger Deployment</button>
+      <p class="status" id="resultMessage"></p>
+    </form>
+  </div>
+
+  <script src="trigger_build.js"></script>
+</body>
+</html>
